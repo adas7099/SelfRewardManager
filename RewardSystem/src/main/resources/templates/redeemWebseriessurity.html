@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+	<head>
+	<meta charset="UTF-8">
+	</head>
+	<body>
+		<div th:object="${redeemWebseriesId}">
+			<p th:text="'WebSeriesName :'+ ${redeemWebseriesId.webseriesName}"> </p>
+			<p th:text="'Ott :'+ ${redeemWebseriesId.ottOption}"> </p>
+		</div>
+		<h4>Are you sure?</h4>
+		<a href="/user/redeemWebseries/redeemWebseries">YES</a>
+		<a href="/user/redeemWebseries">NO</a>
+	</body>
+</html>

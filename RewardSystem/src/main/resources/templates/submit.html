@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head></head>
+<body>
+	<form th:action="@{/user/submitTimesheet}" method="post" th:object="${dailyTimesheetRequestBean}">
+		<label>Date : </label><input type="date" th:field="*{tdate}"><br>
+		<label>No of pomos : </label><input type="number" th:field="*{noOfPomo}"><br>
+		<label>No Of mins WatchVideo : </label><input type="number" th:field="*{NoOfminsWatchVideo}"><br>
+		<label>Exercise : </label><input type="checkbox" th:field="*{exercise}"><br>
+		<label>No of Apti pomos : </label><input type="number" th:field="*{noOfAptiPomo}"><br>
+		<label>No Of Questions : </label><input type="number" th:field="*{noOfQuestions}"><br>
+        <button type="submit">Submit</button>  
+	</form>
+</body>
+</html>

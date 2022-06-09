@@ -1,0 +1,32 @@
+{"properties": [
+  {
+    "name": "hibernate.dialect",
+    "type": "java.lang.String",
+    "description": "A description for 'hibernate.dialect'"
+  },
+  {
+    "name": "hibernate.hbm2ddl.auto",
+    "type": "java.lang.String",
+    "description": "A description for 'hibernate.hbm2ddl.auto'"
+  },
+  {
+    "name": "entitymanager.packagesToScan",
+    "type": "java.lang.String",
+    "description": "A description for 'entitymanager.packagesToScan'"
+  },
+  {
+    "name": "hibernate.show_sql",
+    "type": "java.lang.String",
+    "description": "A description for 'hibernate.show_sql'"
+  },
+  {
+    "name": "hibernate.show_sql",
+    "type": "java.lang.String",
+    "description": "A description for 'hibernate.show_sql'"
+  },
+  {
+    "name": "entitymanager.packagesToScan",
+    "type": "java.lang.String",
+    "description": "A description for 'entitymanager.packagesToScan'"
+  }
+]}

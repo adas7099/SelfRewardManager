@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+	<head>
+	<meta charset="UTF-8">
+	<style>
+    .inv {
+      display: none;
+    }
+    </style>
+	</head>
+	<body>
+		<div th:object="${messageBean}">
+		<p th:text="${messageBean.message}"></p><br>
+		</div>
+		<form th:action="@{/user/redeemMovies/add}" method="post" th:object="${redeemMovieRequest}">
+			<select th:field="*{ottOption}" id="target">
+				<option th:text="Hotstar" th:value="content_1" value="content_1">
+				<option th:text="Amazon" th:value="content_2" value="content_2">
+				<option th:text="Netflix" th:value="content_3"value="content_3">
+				<option th:text="Others" th:value="content_4"value="content_4">
+			</select>
+			<input type="text" th:field="*{movieName}">
+			<button type="submit">Add</button>  
+		</form>
+		<div id="content_1" class="inv">
+			<ul>
+			<li th:each="hotstarMovie : ${hotstarMovies}">
+				
+				<a th:href="@{'/user/redeemMovies/redeem/' +${hotstarMovie.movieid}}" th:text="${hotstarMovie.movieName}"></a>
+				<a th:href="@{'/user/redeemMovies/remove/' +${hotstarMovie.movieid}}" >
+					<button >Remove</button>
+				</a>
+			
+			</li>
+		</ul>
+		</div>
+		<div id="content_2" class="inv">
+			<ul>
+			<li th:each="amazonMovie : ${amazonMovies}">
+				<a th:href="@{'/user/redeemMovies/redeem/' +${amazonMovie.movieid}}"  th:text="${amazonMovie.movieName}"></a>
+				<a th:href="@{'/user/redeemMovies/remove/' +${amazonMovie.movieid}}" >
+					<button>Remove</button>
+				</a>
+       
+			</li>
+		</ul>
+		</div>
+		<div id="content_3" class="inv">
+			<ul>
+			<li th:each="netfixMovie : ${netfixMovies}">
+				<a th:href="@{'/user/redeemMovies/redeem/' +${netfixMovie.movieid}}"  th:text="${netfixMovie.movieName}"></a>
+				<a th:href="@{'/user/redeemMovies/remove/' +${netfixMovie.movieid}}" >
+					<button>Remove</button>
+				</a>
+			</li>
+		</ul>
+		</div>
+		<div id="content_4" class="inv">
+			<ul>
+			<li th:each="otherMovie : ${otherMovies}">
+			<a th:href="@{'/user/redeemMovies/redeem/' +${otherMovie.movieid}}"  th:text="${otherMovie.movieName}"></a>
+			<a th:href="@{'/user/redeemMovies/remove/' +${otherMovie.movieid}}" >
+					<button>Remove</button>
+				</a>
+			</li>
+		</ul>
+		</div>
+	</body>
+	<script>
+	document.getElementById('target').addEventListener('change', function () {
+        'use strict';
+        var vis = document.querySelector('.vis'),
+          target = document.getElementById(this.value);
+        if (vis !== null) {
+          vis.className = 'inv';
+        }
+        if (target !== null) {
+          target.className = 'vis';
+        }
+      });
+	
+	</script>
+</html>

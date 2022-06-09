@@ -1,0 +1,13 @@
+
+ USE REWARD_SYSTEM;
+ CREATE TABLE DAILY_TIMESHEET(
+	Tid int not null primary key,
+    Tdate date,
+    Ttime time,
+    NoOfPomo int,
+    NoOfWatchVideo int,
+    Exercise boolean,
+    NoOfAptiPomo int,
+    NoOfQuestions int,
+    Points decimal
+ );

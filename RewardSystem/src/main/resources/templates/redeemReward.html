@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+	<head>
+	<meta charset="UTF-8">
+	</head>
+	<body>
+	<div th:if="${redeemeligibleRecords==null or redeemeligibleRecords.isEmpty()}">
+		<p>No reward there to redeemed,Please add one</p>
+		<a href="/user/addreward">Add reward</a><br>
+	</div>
+	<div th:each="redeemeligibleRecord :${redeemeligibleRecords}">
+		<form th:action="@{/user/reedeemrewardProcess/}+${redeemeligibleRecord.rewardid}" method="post">
+			<p th:text="${redeemeligibleRecord.rewardName}">Reward Name:</p>
+			<p th:text="${redeemeligibleRecord.rewardvalue}">Reward Value :</p>
+			<button type="submit">Redeem</button>  
+		</form>
+		
+	</div>
+	</body>
+</html>

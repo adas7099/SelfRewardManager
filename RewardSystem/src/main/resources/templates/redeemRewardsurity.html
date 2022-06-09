@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+	<head>
+	<meta charset="UTF-8">
+	</head>
+	<body>
+		<div th:object="${redeemRewardRequest}">
+			<p th:text="'Reward :'+ ${redeemRewardRequest.rewardName}"> </p>
+			<p th:text="'For value :'+ ${redeemRewardRequest.rewardvalue}"></p>
+		</div>
+		<h4>Are you sure?</h4>
+		<a href="/user/surityrewardredeem">YES</a>
+		<a href="/user/redeemReward">NO</a>
+	</body>
+</html>

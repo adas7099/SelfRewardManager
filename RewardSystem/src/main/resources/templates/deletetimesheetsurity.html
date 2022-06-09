@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+	<head>
+	<meta charset="UTF-8">
+	</head>
+	<body>
+		<div th:object="${deleteDateBean}">
+			<p th:text="'Delete Date :'+ ${deleteDateBean.ddate}"> </p>
+		</div>
+		<h4>Are you sure?</h4>
+		<a href="/user/suritydeletetimesheet">YES</a>
+		<a href="/user/deletetimesheet">NO</a>
+	</body>
+</html>

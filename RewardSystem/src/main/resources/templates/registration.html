@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+	<head>
+	<meta charset="UTF-8">
+	</head>
+	<body>
+	<div th:object="${messageBean}">
+		<p th:text="${messageBean.message}"></p><br>
+	</div>
+		<form method="POST" th:action="@{/signup/submit}" th:object="${loginBean}">
+			<label>Name : </label><input type="text" th:field="*{name}"><br>
+			<label>Email : </label><input type="email" th:field="*{email}"><br>
+			<label>Password : </label><input type="password" th:field="*{password}"><br>
+			<label>Confirm Password : </label><input type="password" th:field="*{conpassword}"><br>
+			<button type="submit">Submit</button>  
+		</form>
+	</body>
+</html>

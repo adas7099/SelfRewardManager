@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+	<head>
+	<meta charset="UTF-8">
+	</head>
+	<body>
+		<h1>Last 10 records</h1>
+		<hr>
+		<div th:each="pointBean : ${pointBeans}">
+			<p th:text="'Points no: '+${pointBean.pid}"></p>
+			<p th:text="' Date: '+${pointBean.pdate}"></p>
+			<p th:text="'Points before action: '+${pointBean.last_points}"></p>
+			<p th:text="'action: '+${pointBean.point_action}"></p>
+			<p th:text="'Differences: '+${pointBean.difference}"></p>
+			<p th:text="'Points after action '+${pointBean.points}"></p>
+			<hr>
+		</div>
+	
+	</body>
+</html>

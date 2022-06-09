@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+	<head>
+	<meta charset="UTF-8">
+	<style>
+    .inv {
+      display: none;
+    }
+    </style>
+	</head>
+	<body>
+		<div th:object="${messageBean}">
+		<p th:text="${messageBean.message}"></p><br>
+		</div>
+		<form th:action="@{/user/redeemWebseries/add}" method="post" th:object="${redeemWebseriesRequest}">
+			<select th:field="*{ottOption}" id="target">
+				<option th:text="Hotstar" th:value="content_1" value="content_1">
+				<option th:text="Amazon" th:value="content_2" value="content_2">
+				<option th:text="Netflix" th:value="content_3"value="content_3">
+				<option th:text="Others" th:value="content_4"value="content_4">
+			</select>
+			<input type="text" th:field="*{webseriesName}">
+			<button type="submit">Add</button>  
+		</form>
+		<div id="content_1" class="inv">
+			<ul>
+			<li th:each="hotstarWebseries : ${hotstarWebseries}">
+				
+				<a th:href="@{'/user/redeemWebseries/redeem/' +${hotstarWebseries.Webseriesid}}" th:text="${hotstarWebseries.webseriesname}"></a>
+				<a th:href="@{'/user/redeemWebseries/remove/' +${hotstarWebseries.Webseriesid}}" >
+					<button >Remove</button>
+				</a>
+			
+			</li>
+		</ul>
+		</div>
+		<div id="content_2" class="inv">
+			<ul>
+			<li th:each="amazonWebseries : ${amazonWebseries}">
+				<a th:href="@{'/user/redeemWebseries/redeem/' +${amazonWebseries.Webseriesid}}"  th:text="${amazonWebseries.webseriesname}"></a>
+				<a th:href="@{'/user/redeemWebseries/remove/' +${amazonWebseries.Webseriesid}}" >
+					<button>Remove</button>
+				</a>
+       
+			</li>
+		</ul>
+		</div>
+		<div id="content_3" class="inv">
+			<ul>
+			<li th:each="netfixWebseries : ${netfixWebseries}">
+				<a th:href="@{'/user/redeemWebseries/redeem/' +${netfixWebseries.Webseriesid}}"  th:text="${netfixWebseries.webseriesname}"></a>
+				<a th:href="@{'/user/redeemWebseries/remove/' +${netfixWebseries.Webseriesid}}" >
+					<button>Remove</button>
+				</a>
+			</li>
+		</ul>
+		</div>
+		<div id="content_4" class="inv">
+			<ul>
+			<li th:each="otherWebseries : ${otherWebseries}">
+			<a th:href="@{'/user/redeemWebseries/redeem/' +${otherWebseries.Webseriesid}}"  th:text="${otherWebseries.webseriesname}"></a>
+			<a th:href="@{'/user/redeemWebseries/remove/' +${otherWebseries.Webseriesid}}" >
+					<button>Remove</button>
+				</a>
+			</li>
+		</ul>
+		</div>
+	</body>
+	<script>
+	document.getElementById('target').addEventListener('change', function () {
+        'use strict';
+        var vis = document.querySelector('.vis'),
+          target = document.getElementById(this.value);
+        if (vis !== null) {
+          vis.className = 'inv';
+        }
+        if (target !== null) {
+          target.className = 'vis';
+        }
+      });
+	
+	</script>
+</html>
