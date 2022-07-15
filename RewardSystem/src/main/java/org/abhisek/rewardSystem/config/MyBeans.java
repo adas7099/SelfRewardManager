@@ -44,7 +44,7 @@ public class MyBeans extends WebSecurityConfigurerAdapter{
 	protected void configure(HttpSecurity http) throws Exception {
 		http.authorizeRequests().antMatchers("/admin/**").hasAuthority("ADMIN")
 			.antMatchers("/user/**").hasAuthority("USER")
-			.antMatchers("/**").permitAll().and().formLogin().and().csrf().disable();
+			.antMatchers("/**").permitAll().and().formLogin().defaultSuccessUrl("/user/home", true).and().csrf().disable();
 	}
 	
 }
