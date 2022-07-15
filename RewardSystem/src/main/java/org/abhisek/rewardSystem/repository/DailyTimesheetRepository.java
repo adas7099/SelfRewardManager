@@ -18,7 +18,7 @@ public interface DailyTimesheetRepository extends JpaRepository<DailyTimesheetBe
 	public long countByTdateAndLogin(Date tdate,Login login);
 	
 	public long deleteByTdateAndLogin(Date tdate,Login login);
-	
+
 	public List<DailyTimesheetBean> findByTdateAndLogin(Date tdate,Login login);
 
 	public long deleteByTidAndLogin(int tid,Login login);

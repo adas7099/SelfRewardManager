@@ -3,27 +3,25 @@ package org.abhisek.rewardSystem.service;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
 import org.abhisek.rewardSystem.bean.DailyTimesheetRequestBean;
 import org.abhisek.rewardSystem.bean.DailyTimesheetSubmissionBean;
-import org.abhisek.rewardSystem.bean.PointsRequestBean;
+import org.abhisek.rewardSystem.bean.TaskBean;
+import org.abhisek.rewardSystem.bean.TaskBeanList;
+import org.abhisek.rewardSystem.bean.TimeSheetTask;
 import org.abhisek.rewardSystem.dao.DailyTimesheetBean;
 import org.abhisek.rewardSystem.dao.Login;
-import org.abhisek.rewardSystem.dao.PointsBean;
 import org.abhisek.rewardSystem.repository.DailyTimesheetRepository;
 import org.abhisek.rewardSystem.repository.LoginRepository;
 import org.abhisek.rewardSystem.repository.PointsRepository;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.gson.Gson;
-
-import org.slf4j.Logger;
 
 @Service
 @Transactional
@@ -78,6 +76,20 @@ public class DailyTimesheetService {
 			dailyTimesheetRepository.deleteByTdateAndLogin(tdate,login);
 		
 		
+	}
+	public DailyTimesheetRequestBean assignTask(DailyTimesheetRequestBean dailyTimesheetRequestBean,
+			TaskBeanList taskBeanList) {
+		
+		if(null==dailyTimesheetRequestBean.getTimeSheetTasks())
+			dailyTimesheetRequestBean.setTimeSheetTasks(new ArrayList<TimeSheetTask>());
+		int i=0;
+		for(TaskBean taskBean:taskBeanList.getTaskBeans()) {
+			dailyTimesheetRequestBean.getTimeSheetTasks().get(i).setTaskName(taskBean.getTaskName());
+			dailyTimesheetRequestBean.getTimeSheetTasks().get(i).setTaskType(taskBean.getTaskType());
+			dailyTimesheetRequestBean.getTimeSheetTasks().get(i).setPointvalue(taskBean.getPointValue());
+			i++;
+		}
+		return dailyTimesheetRequestBean;
 	}
 	
 }

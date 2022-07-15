@@ -7,14 +7,16 @@
 		<h1>Last 10 records</h1>
 		
 		<div th:each="dailyTimesheetRequestBean : ${dailyTimesheetRequestBeans}">
-			<p th:text="'Timesheet no: '+${dailyTimesheetRequestBean.tid}"></p>
-			<p th:text="'Timesheet Date: '+${dailyTimesheetRequestBean.tdate}"></p>
-			<p th:text="'No of Pomo: '+${dailyTimesheetRequestBean.noOfPomo}"></p>
-			<p th:text="'No of mins Video watched:'+${dailyTimesheetRequestBean.noOfminsWatchVideo}"></p>
-			<p th:text="'Exercise: '+${dailyTimesheetRequestBean.exercise}"></p>
-			<p th:text="'No of Apti Pomo: '+${dailyTimesheetRequestBean.noOfAptiPomo}"></p>
-			<p th:text="'No of Questions: '+${dailyTimesheetRequestBean.noOfQuestions}"></p>
-			<p th:text="'Points:'+${dailyTimesheetRequestBean.points}"></p>
+			<p th:text="'Date :'+ ${dailyTimesheetRequestBean.tdate}"> </p>
+			<div th:each="timeSheetTask : ${dailyTimesheetRequestBean.timeSheetTasks}">
+				<div th:if="${timeSheetTask.taskType=='Boolean'}">
+					<p th:text="${timeSheetTask.taskName}+':'+${timeSheetTask.boolPoint}"></p>
+				</div>
+				<div th:if="${timeSheetTask.taskType=='Number'}">
+					<p th:text="${timeSheetTask.taskName}+':'+${timeSheetTask.eachPoint}"></p>
+				
+				</div>
+			</div>
 			<hr>
 		</div>
 	

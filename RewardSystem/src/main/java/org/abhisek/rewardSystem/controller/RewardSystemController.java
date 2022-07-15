@@ -1,11 +1,14 @@
 package org.abhisek.rewardSystem.controller;
 
 import java.security.Principal;
+import java.sql.Date;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpSession;
 
+import org.abhisek.rewardSystem.Exception.TaskException;
 import org.abhisek.rewardSystem.bean.DailyTimesheetRequestBean;
 import org.abhisek.rewardSystem.bean.DailyTimesheetSubmissionBean;
 import org.abhisek.rewardSystem.bean.DeleteDateBean;
@@ -16,6 +19,8 @@ import org.abhisek.rewardSystem.bean.RedeemRewardRequest;
 import org.abhisek.rewardSystem.bean.RedeemWebseriesId;
 import org.abhisek.rewardSystem.bean.RedeemWebseriesRequest;
 import org.abhisek.rewardSystem.bean.RewardRequestBean;
+import org.abhisek.rewardSystem.bean.TaskBean;
+import org.abhisek.rewardSystem.bean.TaskBeanList;
 import org.abhisek.rewardSystem.dao.DailyTimesheetBean;
 import org.abhisek.rewardSystem.dao.Login;
 import org.abhisek.rewardSystem.dao.Movies;
@@ -27,17 +32,21 @@ import org.abhisek.rewardSystem.service.LoginService;
 import org.abhisek.rewardSystem.service.MoviesService;
 import org.abhisek.rewardSystem.service.PointsService;
 import org.abhisek.rewardSystem.service.RewardsService;
+import org.abhisek.rewardSystem.service.TaskService;
 import org.abhisek.rewardSystem.service.WebseriesService;
 import org.abhisek.rewardSystem.verify.VerifyObjects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.google.gson.Gson;
 
@@ -47,6 +56,8 @@ public class RewardSystemController {
 	Logger logger = LoggerFactory.getLogger(DailyTimesheetService.class);
 	@Autowired
 	Gson gson;
+	@Autowired
+	Gson logGson;
 	@Autowired
 	DailyTimesheetService dailyTimesheetService;
 	@Autowired
@@ -69,6 +80,8 @@ public class RewardSystemController {
 	RedeemWebseriesId redeemWebseriesId;
 	@Autowired
 	LoginService loginService;
+	@Autowired
+	TaskService taskService;
 	@RequestMapping(value = "/home", method = RequestMethod.GET)
 	public String home( Model model,HttpSession session,Principal principal) {
 		//logger.info("userName:"+principal.getName());
@@ -86,7 +99,10 @@ public class RewardSystemController {
 		
 		logger.info("count :"+count);
 		if(count==0) {
+			TaskBeanList taskBeanList=taskService.getTaskList(login);
+			dailyTimesheetRequestBean=dailyTimesheetService.assignTask(dailyTimesheetRequestBean,taskBeanList);
 			this.dailyTimesheetRequestBean=dailyTimesheetRequestBean;
+			logger.info("RewardSystemController.submitTimesheet dailyTimesheetRequestBean:"+gson.toJson(dailyTimesheetRequestBean));
 			model.addAttribute("dailyTimesheetRequestBean", dailyTimesheetRequestBean);
 			return "pointssurity";
 		}
@@ -134,8 +150,11 @@ public class RewardSystemController {
 		return "sucesssubmit";
 	}
 	@RequestMapping(value = "/submit", method = RequestMethod.GET)
-	public String submit(Model model) {
-		DailyTimesheetRequestBean dailyTimesheetRequestBean = new DailyTimesheetRequestBean();
+	public String submit(Model model,Principal principal) {
+		Login login=loginService.getLoginByEmailOrUserName(principal.getName());
+		TaskBeanList taskBeanList=taskService.getTaskList(login);
+		DailyTimesheetRequestBean dailyTimesheetRequestBean = new DailyTimesheetRequestBean(taskBeanList);
+		logger.info("RewardSystemController.submit dailyTimesheetRequestBean:"+gson.toJson(dailyTimesheetRequestBean));
 		model.addAttribute("dailyTimesheetRequestBean", dailyTimesheetRequestBean);
 		logger.info("submit called");
 		return "submit";
@@ -292,13 +311,13 @@ public class RewardSystemController {
 		model.addAttribute("messageBean",  new MessageBean("INFO", ""));
 		RedeemMovieRequest redeemMovieRequest= new RedeemMovieRequest();
 		List<Movies> netfixMovies=moviesService.findByOtt("Netflix",login);
-		logger.info("RewardSystemController.redeemMovies(Model) Netflix :"+gson.toJson(netfixMovies));
+		logger.info("RewardSystemController.redeemMovies(Model) Netflix :"+logGson.toJson(netfixMovies));
 		List<Movies> amazonMovies=moviesService.findByOtt("amazon",login);
-		logger.info("RewardSystemController.redeemMovies(Model) Netflix :"+gson.toJson(amazonMovies));
+		logger.info("RewardSystemController.redeemMovies(Model) Netflix :"+logGson.toJson(amazonMovies));
 		List<Movies> hotstarMovies=moviesService.findByOtt("hotstar",login);
-		logger.info("RewardSystemController.redeemMovies(Model) Netflix :"+gson.toJson(hotstarMovies));
+		logger.info("RewardSystemController.redeemMovies(Model) Netflix :"+logGson.toJson(hotstarMovies));
 		List<Movies> otherMovies=moviesService.findByOtt("other",login);
-		logger.info("RewardSystemController.redeemMovies(Model) Netflix :"+gson.toJson(otherMovies));
+		logger.info("RewardSystemController.redeemMovies(Model) Netflix :"+logGson.toJson(otherMovies));
 		model.addAttribute("redeemMovieRequest", redeemMovieRequest);
 		model.addAttribute("netfixMovies", netfixMovies);
 		model.addAttribute("amazonMovies", amazonMovies);
@@ -330,13 +349,13 @@ public class RewardSystemController {
 		Login login=loginService.getLoginByEmailOrUserName(principal.getName());
 		moviesService.insertMovie(movies,login);
 		List<Movies> netfixMovies=moviesService.findByOtt("Netflix",login);
-		logger.info("RewardSystemController.redeemMovies(Model) Netflix :"+gson.toJson(netfixMovies));
+		logger.info("RewardSystemController.redeemMovies(Model) Netflix :"+logGson.toJson(netfixMovies));
 		List<Movies> amazonMovies=moviesService.findByOtt("amazon",login);
-		logger.info("RewardSystemController.redeemMovies(Model) Netflix :"+gson.toJson(amazonMovies));
+		logger.info("RewardSystemController.redeemMovies(Model) Netflix :"+logGson.toJson(amazonMovies));
 		List<Movies> hotstarMovies=moviesService.findByOtt("hotstar",login);
-		logger.info("RewardSystemController.redeemMovies(Model) Netflix :"+gson.toJson(hotstarMovies));
+		logger.info("RewardSystemController.redeemMovies(Model) Netflix :"+logGson.toJson(hotstarMovies));
 		List<Movies> otherMovies=moviesService.findByOtt("other",login);
-		logger.info("RewardSystemController.redeemMovies(Model) Netflix :"+gson.toJson(otherMovies));
+		logger.info("RewardSystemController.redeemMovies(Model) Netflix :"+logGson.toJson(otherMovies));
 		model.addAttribute("redeemMovieRequest", redeemMovieRequest);
 		model.addAttribute("netfixMovies", netfixMovies);
 		model.addAttribute("amazonMovies", amazonMovies);
@@ -385,13 +404,13 @@ public class RewardSystemController {
 		model.addAttribute("messageBean", messageBean);
 		moviesService.deleteByMovieId(Integer.parseInt(movieId));
 		List<Movies> netfixMovies=moviesService.findByOtt("Netflix",login);
-		logger.info("RewardSystemController.redeemMovies(Model) Netflix :"+gson.toJson(netfixMovies));
+		logger.info("RewardSystemController.redeemMovies(Model) Netflix :"+logGson.toJson(netfixMovies));
 		List<Movies> amazonMovies=moviesService.findByOtt("amazon",login);
-		logger.info("RewardSystemController.redeemMovies(Model) Netflix :"+gson.toJson(amazonMovies));
+		logger.info("RewardSystemController.redeemMovies(Model) Netflix :"+logGson.toJson(amazonMovies));
 		List<Movies> hotstarMovies=moviesService.findByOtt("hotstar",login);
-		logger.info("RewardSystemController.redeemMovies(Model) Netflix :"+gson.toJson(hotstarMovies));
+		logger.info("RewardSystemController.redeemMovies(Model) Netflix :"+logGson.toJson(hotstarMovies));
 		List<Movies> otherMovies=moviesService.findByOtt("other",login);
-		logger.info("RewardSystemController.redeemMovies(Model) Netflix :"+gson.toJson(otherMovies));
+		logger.info("RewardSystemController.redeemMovies(Model) Netflix :"+logGson.toJson(otherMovies));
 		model.addAttribute("netfixMovies", netfixMovies);
 		model.addAttribute("amazonMovies", amazonMovies);
 		model.addAttribute("hotstarMovies", hotstarMovies);
@@ -413,13 +432,13 @@ public class RewardSystemController {
 		model.addAttribute("messageBean",  new MessageBean("INFO", ""));
 		RedeemWebseriesRequest redeemWebseriesRequest= new RedeemWebseriesRequest();
 		List<Webseries> netfixWebseries=WebseriesService.findByOtt("Netflix",login);
-		logger.info("RewardSystemController.redeemWebseries(Model) Netflix :"+gson.toJson(netfixWebseries));
+		logger.info("RewardSystemController.redeemWebseries(Model) Netflix :"+logGson.toJson(netfixWebseries));
 		List<Webseries> amazonWebseries=WebseriesService.findByOtt("amazon",login);
-		logger.info("RewardSystemController.redeemWebseries(Model) Amazon :"+gson.toJson(amazonWebseries));
+		logger.info("RewardSystemController.redeemWebseries(Model) Amazon :"+logGson.toJson(amazonWebseries));
 		List<Webseries> hotstarWebseries=WebseriesService.findByOtt("hotstar",login);
-		logger.info("RewardSystemController.redeemWebseries(Model) hotstar :"+gson.toJson(hotstarWebseries));
+		logger.info("RewardSystemController.redeemWebseries(Model) hotstar :"+logGson.toJson(hotstarWebseries));
 		List<Webseries> otherWebseries=WebseriesService.findByOtt("other",login);
-		logger.info("RewardSystemController.redeemWebseries(Model) other :"+gson.toJson(otherWebseries));
+		logger.info("RewardSystemController.redeemWebseries(Model) other :"+logGson.toJson(otherWebseries));
 		model.addAttribute("redeemWebseriesRequest", redeemWebseriesRequest);
 		model.addAttribute("netfixWebseries", netfixWebseries);
 		model.addAttribute("amazonWebseries", amazonWebseries);
@@ -483,13 +502,13 @@ public class RewardSystemController {
 		}
 		WebseriesService.insertWebseries(Webseries,login);
 		List<Webseries> netfixWebseries=WebseriesService.findByOtt("Netflix",login);
-		logger.info("RewardSystemController.redeemWebseries(Model) Netflix :"+gson.toJson(netfixWebseries));
+		logger.info("RewardSystemController.redeemWebseries(Model) Netflix :"+logGson.toJson(netfixWebseries));
 		List<Webseries> amazonWebseries=WebseriesService.findByOtt("amazon",login);
-		logger.info("RewardSystemController.redeemWebseries(Model) amazon :"+gson.toJson(amazonWebseries));
+		logger.info("RewardSystemController.redeemWebseries(Model) amazon :"+logGson.toJson(amazonWebseries));
 		List<Webseries> hotstarWebseries=WebseriesService.findByOtt("hotstar",login);
-		logger.info("RewardSystemController.redeemWebseries(Model) hotstar :"+gson.toJson(hotstarWebseries));
+		logger.info("RewardSystemController.redeemWebseries(Model) hotstar :"+logGson.toJson(hotstarWebseries));
 		List<Webseries> otherWebseries=WebseriesService.findByOtt("other",login);
-		logger.info("RewardSystemController.redeemWebseries(Model) other :"+gson.toJson(otherWebseries));
+		logger.info("RewardSystemController.redeemWebseries(Model) other :"+logGson.toJson(otherWebseries));
 		model.addAttribute("redeemWebseriesRequest", redeemWebseriesRequest);
 		model.addAttribute("netfixWebseries", netfixWebseries);
 		model.addAttribute("amazonWebseries", amazonWebseries);
@@ -506,18 +525,65 @@ public class RewardSystemController {
 		model.addAttribute("messageBean", messageBean);
 		WebseriesService.deleteByWebseriesid(Integer.parseInt(webseriesId));
 		List<Webseries> netfixWebseries=WebseriesService.findByOtt("Netflix",login);
-		logger.info("RewardSystemController.redeemWebseries(Model) Netflix :"+gson.toJson(netfixWebseries));
+		logger.info("RewardSystemController.redeemWebseries(Model) Netflix :"+logGson.toJson(netfixWebseries));
 		List<Webseries> amazonWebseries=WebseriesService.findByOtt("amazon",login);
-		logger.info("RewardSystemController.redeemWebseries(Model) Netflix :"+gson.toJson(amazonWebseries));
+		logger.info("RewardSystemController.redeemWebseries(Model) Netflix :"+logGson.toJson(amazonWebseries));
 		List<Webseries> hotstarWebseries=WebseriesService.findByOtt("hotstar",login);
-		logger.info("RewardSystemController.redeemWebseries(Model) Netflix :"+gson.toJson(hotstarWebseries));
+		logger.info("RewardSystemController.redeemWebseries(Model) Netflix :"+logGson.toJson(hotstarWebseries));
 		List<Webseries> otherWebseries=WebseriesService.findByOtt("other",login);
-		logger.info("RewardSystemController.redeemWebseries(Model) Netflix :"+gson.toJson(otherWebseries));
+		logger.info("RewardSystemController.redeemWebseries(Model) Netflix :"+logGson.toJson(otherWebseries));
 		model.addAttribute("redeemWebseriesRequest", new RedeemWebseriesRequest());
 		model.addAttribute("netfixWebseries", netfixWebseries);
 		model.addAttribute("amazonWebseries", amazonWebseries);
 		model.addAttribute("hotstarWebseries", hotstarWebseries);
 		model.addAttribute("otherWebseries", otherWebseries);
 		return "redeemWebseries";
+	}
+	@RequestMapping(value="/task",method = RequestMethod.GET)
+	public String showTasks(Model model,Principal principal) {
+		Login login=loginService.getLoginByEmailOrUserName(principal.getName());
+		model.addAttribute("messageBean",  new MessageBean("INFO", ""));
+		TaskBeanList tasksList=taskService.getTaskList(login);
+		logger.info("existingTasks" + gson.toJson(tasksList));
+		if(null!=tasksList && !CollectionUtils.isEmpty(tasksList.getTaskBeans()))
+			model.addAttribute("existingTasks", tasksList.getTaskBeans());
+		TaskBean taskInfo=new TaskBean();
+		model.addAttribute("taskInfo", taskInfo);
+		return "task";
+	}
+	@RequestMapping(value="/addtask",method = RequestMethod.POST)
+	public String showTasks(Model model,@ModelAttribute TaskBean taskInfo,Principal principal) {
+		Login login=loginService.getLoginByEmailOrUserName(principal.getName());
+		model.addAttribute("messageBean",  new MessageBean("INFO", ""));
+		logger.info("taskInfo taskName" + taskInfo.getTaskName());
+		logger.info("taskInfo" + gson.toJson(taskInfo));
+		TaskBeanList tasksList=null ;
+		try {
+			tasksList=taskService.addTaskBean(taskInfo, login);
+		} catch (TaskException e) {
+			e.printStackTrace();
+		}
+		if(tasksList==null || CollectionUtils.isEmpty(tasksList.getTaskBeans()))
+			tasksList = taskService.getTaskList(login);
+		model.addAttribute("existingTasks", tasksList.getTaskBeans());
+		logger.info("existingTasks" + gson.toJson(tasksList));
+		model.addAttribute("taskInfo", taskInfo);
+		 
+		return "task";
+	}
+
+	@RequestMapping(value="/task/remove/{taskName}",method = RequestMethod.GET)
+	public String removeTask(@PathVariable String taskName,Principal principal,Model model) {
+		Login login=loginService.getLoginByEmailOrUserName(principal.getName());
+		model.addAttribute("messageBean",  new MessageBean("INFO", ""));
+		TaskBeanList tasksList=taskService.removeTaskBean(taskName, login);
+		logger.info("existingTasks 1 " + gson.toJson(tasksList));
+		if(tasksList==null || CollectionUtils.isEmpty(tasksList.getTaskBeans()))
+			tasksList = taskService.getTaskList(login);
+		model.addAttribute("existingTasks 2 ", tasksList.getTaskBeans());
+		model.addAttribute("existingTasks", tasksList.getTaskBeans());
+		logger.info("existingTasks" + gson.toJson(tasksList));
+		model.addAttribute("taskInfo", new TaskBean());
+		return "task";
 	}
 }

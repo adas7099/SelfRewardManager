@@ -3,12 +3,10 @@ package org.abhisek.rewardSystem.config;
 import org.abhisek.rewardSystem.bean.DailyTimesheetRequestBean;
 import org.abhisek.rewardSystem.bean.DeleteDateBean;
 import org.abhisek.rewardSystem.bean.RedeemMovieId;
-import org.abhisek.rewardSystem.bean.RedeemMovieRequest;
 import org.abhisek.rewardSystem.bean.RedeemRewardRequest;
 import org.abhisek.rewardSystem.bean.RedeemWebseriesId;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -17,6 +15,10 @@ import com.google.gson.GsonBuilder;
 public class BeansConfig {
 	@Bean(name="gson")
 	public Gson getGson() {
+		return new Gson();
+	}
+	@Bean(name="logGson")
+	public Gson getLogGson() {
 		return new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 	}
 	@Bean(name="dailyTimesheetRequestBean")

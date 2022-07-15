@@ -4,9 +4,37 @@
 	<meta charset="UTF-8">
 	</head>
 	<body>
+	<div th:object="${messageBean}">
+		<p th:text="${messageBean.message}"></p><br>
+	</div>
 	<table>
 		<tr>
-			<td></td>
+			<th>Task Name</th>
+			<th>Task Type</th>
+			<th>Task PointValue</th>
+		</tr>
+		<tr th:each="tasks:${existingTasks}">
+			<td th:text="${tasks.taskName}"></td>
+			<td th:text="${tasks.taskType}"></td>
+			<td th:text="${tasks.pointValue}"></td>
+			<td><a th:href="@{'/user/task/remove/' +${tasks.taskName}}" >
+					<button >Remove</button>
+				</a></td>
+		</tr>
+		<tr>
+		<form th:action="@{/user/addtask}" method="post" th:object="${taskInfo}">
+		
+				<td><input type="text" th:field="*{taskName}"></td>
+				
+				<td>	<select th:field="*{taskType}">
+						<option th:value="Number" th:text="Number"></option>
+						<option th:value="Boolean" th:text="Boolean"></option>
+					</select>
+				</td>
+				
+				<td><input type="number" th:field="*{pointValue}"></td>
+				<td><button type="submit">Add</button></td>
+		</form>
 		</tr>
 	</table>
 	</body>

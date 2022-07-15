@@ -1,6 +1,7 @@
 package org.abhisek.rewardSystem.dao;
 
 import java.sql.Date;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -14,7 +15,9 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.abhisek.rewardSystem.bean.DailyTimesheetRequestBean;
+import org.abhisek.rewardSystem.bean.TimeSheetTask;
 
+import com.google.gson.Gson;
 import com.google.gson.annotations.Expose;
 
 import lombok.Getter;
@@ -30,19 +33,10 @@ public class DailyTimesheetBean {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name="tid")
 	private int tid;
-	
 	@Column(name="tdate")
 	private Date tdate;
-	@Column(name="noofpomo")
-	private int noOfPomo;
-	@Column(name="noofwatchvideo")
-	private int noOfWatchVideo;
-	@Column(name="Exercise")
-	private Boolean exercise;
-	@Column(name="noofaptipomo")
-	private int noOfAptiPomo;
-	@Column(name="noofquestions")
-	private int noOfQuestions;
+	@Column(name="timesheetString")
+	private String timesheetString;
 	@Column(name="points")
 	private double points;
 	@Expose(serialize = false)
@@ -51,13 +45,18 @@ public class DailyTimesheetBean {
 	
 	public DailyTimesheetBean(DailyTimesheetRequestBean dailyTimesheetRequestBean) {
 		this.tdate=dailyTimesheetRequestBean.getTdate();
-		this.noOfPomo=dailyTimesheetRequestBean.getNoOfPomo();
-		this.noOfAptiPomo=dailyTimesheetRequestBean.getNoOfAptiPomo();
-		this.noOfWatchVideo=dailyTimesheetRequestBean.getNoOfminsWatchVideo();
-		this.exercise=dailyTimesheetRequestBean.getExercise();
-		this.noOfAptiPomo=dailyTimesheetRequestBean.getNoOfAptiPomo();
-		this.noOfQuestions=dailyTimesheetRequestBean.getNoOfQuestions();
-		this.points=noOfAptiPomo+(noOfWatchVideo*0.1)+noOfAptiPomo+(noOfQuestions*0.1)+(exercise?1:0);
+		this.timesheetString=new Gson().toJson(dailyTimesheetRequestBean.getTimeSheetTasks());
+		int total=0;
+		for(TimeSheetTask timeSheetTask:dailyTimesheetRequestBean.getTimeSheetTasks()) {
+			if(timeSheetTask.getTaskType().equalsIgnoreCase("Boolean")) {
+				total=(timeSheetTask.isBoolPoint()?1:0)*timeSheetTask.getPointvalue();
+			}
+			if(timeSheetTask.getTaskType().equalsIgnoreCase("Number")) {
+				total=timeSheetTask.getPointvalue()*timeSheetTask.getEachPoint();
+			}
+		}
+		this.points=total;
+		
 	}
 
 	

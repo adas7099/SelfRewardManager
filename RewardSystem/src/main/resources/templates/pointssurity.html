@@ -6,12 +6,17 @@
 	<body>
 		<div th:object="${dailyTimesheetRequestBean}">
 			<p th:text="'Date :'+ ${dailyTimesheetRequestBean.tdate}"> </p>
-			<p th:text="'No Of Pomo :'+${dailyTimesheetRequestBean.noOfPomo}"></p>
-			<p th:text="'No Of minsWatchVideo :'+${dailyTimesheetRequestBean.NoOfminsWatchVideo}"></p>
-			<p th:text="'Exercise :'+${dailyTimesheetRequestBean.exercise}"></p>
-			<p th:text="'No Of AptiPomo :'+${dailyTimesheetRequestBean.noOfAptiPomo}"></p>
-			<p th:text="'No Of Questions :'+${dailyTimesheetRequestBean.noOfQuestions}"></p>
-		</div>
+			<div th:each="timeSheetTask : ${dailyTimesheetRequestBean.timeSheetTasks}">
+				<div th:if="${timeSheetTask.taskType=='Boolean'}">
+					<p th:text="${timeSheetTask.TaskName}+':'+${timeSheetTask.boolPoint}"></p>
+				</div>
+				<div th:if="${timeSheetTask.taskType=='Number'}">
+					<p th:text="${timeSheetTask.TaskName}+':'+${timeSheetTask.eachPoint}"></p>
+				
+				</div>
+			</div>
+			
+			</div>
 		<h4>Are you sure?</h4>
 		<a href="/user/suresubmittimesheet">YES</a>
 		<a href="/user/submit">NO</a>

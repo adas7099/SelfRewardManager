@@ -30,13 +30,15 @@ public class PointsService {
 	@Autowired
 	Gson gson;
 	@Autowired
+	Gson logGson;
+	@Autowired
 	LoginRepository loginRepository;
 	Logger logger=LoggerFactory.getLogger(PointsService.class);
 	public void storePointsWhileSubmitting(DailyTimesheetBean dailyTimesheetBean,Login login) {
 		PointsBean pointsBean= pointsRepository.findFirstByLoginOrderByPidDesc(login);
 		PointsRequestBean pointsRequestBean =null;
-		logger.info("PointsService.storePointsWhileSubmitting() pointsBean : "+gson.toJson(pointsBean));
-		logger.info("PointsService.storePointsWhileSubmitting() dailyTimesheetBean : "+gson.toJson(dailyTimesheetBean));
+		logger.info("PointsService.storePointsWhileSubmitting() pointsBean : "+logGson.toJson(pointsBean));
+		logger.info("PointsService.storePointsWhileSubmitting() dailyTimesheetBean : "+logGson.toJson(dailyTimesheetBean));
 		
 		
 		if(pointsBean!=null) {
@@ -45,10 +47,10 @@ public class PointsService {
 		else {
 			 pointsRequestBean =new PointsRequestBean(dailyTimesheetBean,0);
 		}
-		logger.info("PointsService.storePointsWhileSubmitting() pointsRequestBean : "+gson.toJson(pointsRequestBean));
+		logger.info("PointsService.storePointsWhileSubmitting() pointsRequestBean : "+logGson.toJson(pointsRequestBean));
 		PointsBean pointsSavingBean =new PointsBean(pointsRequestBean);
 		pointsSavingBean.setLogin(login);
-		logger.info("PointsService.storePointsWhileSubmitting() pointsBean : "+gson.toJson(pointsSavingBean));
+		logger.info("PointsService.storePointsWhileSubmitting() pointsBean : "+logGson.toJson(pointsSavingBean));
 		login.getPointBeans().add(pointsSavingBean);
 		pointsRepository.save(pointsSavingBean);
 		loginRepository.save(login);

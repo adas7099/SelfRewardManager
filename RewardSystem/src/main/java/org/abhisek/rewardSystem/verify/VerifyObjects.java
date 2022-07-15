@@ -11,7 +11,7 @@ import org.abhisek.rewardSystem.dao.Webseries;
 public class VerifyObjects {
 	
 	public static boolean verifydailyTimesheetRequestBean(DailyTimesheetRequestBean dailyTimesheetRequestBean) {
-		if(dailyTimesheetRequestBean==null || dailyTimesheetRequestBean.getTdate()==null ||dailyTimesheetRequestBean.getExercise()==null) {
+		if(dailyTimesheetRequestBean==null || dailyTimesheetRequestBean.getTdate()==null ||dailyTimesheetRequestBean.getTimeSheetTasks()==null) {
 			return false;
 		}
 		return true;
